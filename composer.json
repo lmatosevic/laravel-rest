@@ -2,7 +2,7 @@
   "name": "lujo/laravel-rest",
   "description": "Laravel package for creating simple REST API",
   "type": "library",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "Laravel",
     "REST",
