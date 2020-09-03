@@ -7,17 +7,17 @@ class RestRoute {
     /**
      * Create REST route for specified router object. Also, only specific route methods can be specified using last argument.
      *
-     * @param $router \Illuminate\Routing\Router Router on which this REST route will be applied.
-     * @param $prefix string Route prefix (e.g. users)
-     * @param $controller string Full controller name string, controller must extend {@link \Lujo\Laravel\Rest\RestController}
-     * @param $middlewares array|string An array of middleware (or one middleware) keys to be used on specific or all
+     * @param \Illuminate\Routing\Router $router Router on which this REST route will be applied.
+     * @param string $prefix Route prefix (e.g. users)
+     * @param string $controller Full controller name string, controller must extend {@link \Lujo\Laravel\Rest\RestController}
+     * @param array|string $middlewares An array of middleware (or one middleware) keys to be used on specific or all
      * functions on this route. e.g.1 Apply on all functions: ['first', 'second', 'third'],
      * e.g.2 Apply specific middleware on specific function: ['INDEX' => 'first', 'CREATE' => ['first', 'second'], 'ONE' => ['first']].
      * e.g.3 Also, it is possible to combine previous two examples ('third' will be applied to 'CREATE', 'UPDATE', 'DELETE'
      * (all except 'ONE' and 'INDEX'): ['ONE' => 'first', 'INDEX' => ['first', 'second'], 'third'].
      * e.g.4 In addition, function names can be combined using comma delimiter: ['INDEX,ONE' => ['first', 'second'], 'third']
      * All middlewares used here must be registered using $app->routeMiddleware(...)
-     * @param $include array|string Provide an array of route functions to generate for this controller
+     * @param array|string|null $include Provide an array of route functions to generate for this controller
      * (options: [INDEX, ONE, CREATE, UPDATE, DELETE]). If you want all the methods, ignore this argument or provide null vlaue.
      */
     public static function route($router, $prefix, $controller, $middlewares = [], $include = null) {

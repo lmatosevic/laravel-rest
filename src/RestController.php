@@ -33,7 +33,15 @@ abstract class RestController extends BaseController {
         for ($i = 0; $i < count($models); $i++) {
             $models[$i] = $this->beforeGet($models[$i], $request);
         }
-        $response = response()->json($models);
+        if ($this->withCountMetadata($request) === true) {
+            $response = response()->json([
+                'result_count' => count($models),
+                'total_count' => $totalCount,
+                'data' => $models
+            ]);
+        } else {
+            $response = response()->json($models);
+        }
         if ($this->withCountHeaders($request) === true) {
             $response->withHeaders(['X-Result-Count' => count($models), 'X-Total-Count' => $totalCount]);
         }
@@ -83,7 +91,7 @@ abstract class RestController extends BaseController {
      * Update existing model.
      *
      * @param Request $request
-     * @param $id number An id of model which to update.
+     * @param number $id An id of model which to update.
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id) {
@@ -110,7 +118,7 @@ abstract class RestController extends BaseController {
      * Delete existing model.
      *
      * @param Request $request
-     * @param $id number An id of model which to delete.
+     * @param number $id An id of model which to delete.
      * @return \Illuminate\Http\JsonResponse
      */
     public function delete(Request $request, $id) {
@@ -123,7 +131,7 @@ abstract class RestController extends BaseController {
         $result = $this->beforeDelete($model, $request);
         if ($result) {
             $model->delete();
-            $after= $this->afterDelete($request, $model);
+            $after = $this->afterDelete($request, $model);
             if ($after) {
                 return $after;
             }
@@ -170,8 +178,8 @@ abstract class RestController extends BaseController {
     /**
      * Called before returning model from controller, can retrun updated model with some extra data.
      *
-     * @param $model Model
-     * @param $request Request
+     * @param Model $model
+     * @param Request $request
      * @return Model
      */
     protected function beforeGet($model, $request) {
@@ -182,7 +190,7 @@ abstract class RestController extends BaseController {
      * Called before creating new model with request data, used for adding additional data or updating existing data
      * from the request. Return null or false to avoid creating model.
      *
-     * @param $request Request
+     * @param Request $request
      * @return mixed|boolean|null
      */
     protected function beforeCreate($request) {
@@ -193,7 +201,7 @@ abstract class RestController extends BaseController {
      * Called before updating existing model with request data, used for adding additional data or updating existing
      * data from the request. Return null or false to avoid updating model.
      *
-     * @param $request Request
+     * @param Request $request
      * @return mixed|boolean|null
      */
     protected function beforeUpdate($request) {
@@ -203,8 +211,8 @@ abstract class RestController extends BaseController {
     /**
      * Called before deleting model from database. Return null or false to avoid deleting model.
      *
-     * @param $model Model
-     * @param $request Request
+     * @param Model $model
+     * @param Request $request
      * @return boolean|null
      */
     protected function beforeDelete($model, $request) {
@@ -215,8 +223,8 @@ abstract class RestController extends BaseController {
      * Called after the model is successfully created. Here is possible to perform event logging, notifications or return
      * alternative resposne that should be returned from this endpoint.
      *
-     * @param $request Request
-     * @param $model Model
+     * @param Model $model
+     * @param Request $request
      */
     protected function afterCreate($request, $model) {
         // no-op
@@ -226,8 +234,8 @@ abstract class RestController extends BaseController {
      * Called after the model is successfully updated. Here is possible to perform event logging, notifications or return
      * alternative resposne that should be returned from this endpoint.
      *
-     * @param $request Request
-     * @param $model Model
+     * @param Model $model
+     * @param Request $request
      */
     protected function afterUpdate($request, $model) {
         // no-op
@@ -237,8 +245,8 @@ abstract class RestController extends BaseController {
      * Called after the model is successfully deleted. Here is possible to perform event levent logging, notifications
      * or return alternative resposne that should be returned from this endpoint.
      *
-     * @param $request Request
-     * @param $model Model
+     * @param Model $model
+     * @param Request $request
      */
     protected function afterDelete($request, $model) {
         // no-op
@@ -248,11 +256,23 @@ abstract class RestController extends BaseController {
      * Called before returning models from database using INDEX method. Return null or false to avoid adding the
      * additional headers to the response (X-Result-Count and X-Total-Count).
      *
-     * @param $request Request
+     * @param Request $request
      * @return boolean|null
      */
     protected function withCountHeaders($request) {
         return true;
+    }
+
+    /**
+     * Called before returning models from database using INDEX method. Return true to add the additional metadata to
+     * the response JSON (result_count and total_count) and store resulting array inside data field.
+     * E.g. {result_count: 10, total_count: 45, data: [...results]}.
+     *
+     * @param Request $request
+     * @return boolean|null
+     */
+    protected function withCountMetadata($request) {
+        return false;
     }
 
     /**

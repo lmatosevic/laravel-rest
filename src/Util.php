@@ -36,7 +36,7 @@ class Util {
      * @param Model $model Model object used as a reference for querying database.
      * @param array $with Array of relations to be included in returned model/models.
      * @param array $where Array of conditions on which to return models.
-     * @param callable $queryFunction Pass query function for making additional complex queries in WHERE section
+     * @param callable|null $queryFunction Pass query function for making additional complex queries in WHERE section
      *  e.g. function($query) { $query->where(...)->orWhere(...);} Leave blank or pass null if unused.
      * @param array $whereHas Array of relational conditions for search criteria on relation objects.
      * (e.g. ['items' => [function($q) { $q->where('name', 'xyz') }, '>=', 1], 'article' => [function($q) {...}]]
@@ -69,7 +69,7 @@ class Util {
      * @param Model $model Model object used as a reference for querying database.
      * @param array $with Array of relations to be included in returned model/models.
      * @param array $where Array of conditions on which to return models.
-     * @param callable $queryFunction Pass query function for making additional complex queries in WHERE section
+     * @param callable|null $queryFunction Pass query function for making additional complex queries in WHERE section
      *  e.g. function($query) { $query->where(...)->orWhere(...);} Leave blank or pass null if unused.
      * @param array $whereHas Array of relational conditions for search criteria on relation objects.
      * (e.g. ['items' => [function($q) { $q->where('name', 'xyz') }, '>=', 1], 'article' => [function($q) {...}]]
@@ -105,13 +105,14 @@ class Util {
      *  "data": {...} | [....] | "response text"
      * }
      *
-     * @param $data mixed Data to return to the client.
+     * @param mixed $data Data to return to the client.
      * @param int $code HTTP success status code.
      * @param array $headers Optional headers to return from server.
+     * @param array $metadata Optional metadata which will be added to root level of JSON response.
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function successResponse($data, $code = 200, $headers = []) {
-        return response()->json(['success' => true, 'data' => $data], $code, $headers);
+    public static function successResponse($data, $code = 200, $headers = [], $metadata = []) {
+        return response()->json(array_merge(['success' => true, 'data' => $data], $metadata), $code, $headers);
     }
 
     /**
@@ -123,12 +124,13 @@ class Util {
      *  "success": false,
      *  "data": {...} | [....] | "error text"
      * }
-     * @param $data mixed Data to return to the client.
+     * @param mixed $data Data to return to the client.
      * @param int $code HTTP error status code.
      * @param array $headers Optional headers to return from server.
+     * @param array $metadata Optional metadata which will be added to root level of JSON response.
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function errorResponse($data, $code = 400, $headers = []) {
+    public static function errorResponse($data, $code = 400, $headers = [], $metadata = []) {
         return response()->json(['success' => false, 'data' => $data], $code, $headers);
     }
 
